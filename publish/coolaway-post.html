@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>屏息 ScreenHold — 酷安发布文案</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --ink:#1c1e21; --sub:#7a7f87;
+    --line:#e6e8ec; --accent:#2f6fed; --ok:#2e9e5b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;line-height:1.75;padding:32px 16px 64px}
+  .wrap{max-width:860px;margin:0 auto}
+  header{margin-bottom:24px}
+  header h1{font-size:24px;font-weight:700}
+  header .meta{color:var(--sub);font-size:13px;margin-top:6px}
+  header .repo{display:inline-block;margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--accent);text-decoration:none}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:18px;box-shadow:0 1px 3px rgba(20,30,50,.04)}
+  .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .card-head h2{font-size:15px;font-weight:700;color:var(--ink)}
+  .card-head .hint{font-size:12px;color:var(--sub)}
+  .copy{border:1px solid var(--accent);color:var(--accent);background:#fff;border-radius:8px;padding:5px 14px;font-size:13px;cursor:pointer;transition:.15s}
+  .copy:hover{background:var(--accent);color:#fff}
+  .copy.done{border-color:var(--ok);color:var(--ok);background:#f0faf4}
+  .content{font-size:14.5px;color:#2a2d33;white-space:pre-wrap}
+  .content b{color:var(--ink)}
+  ul{padding-left:20px;margin:6px 0}
+  li{margin:4px 0}
+  .tagrow{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:#eef3fe;color:var(--accent);border-radius:6px;padding:3px 10px;font-size:13px}
+  .foot{color:var(--sub);font-size:12px;text-align:center;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>屏息 ScreenHold — 酷安发布文案</h1>
+    <div class="meta">offScreen v1.2.4 (vc26) · 2026-10-25 · 每个区块右上角按钮一键复制</div>
+    <a class="repo" href="https://github.com/wcx888/ScreenHold" target="_blank">github.com/wcx888/ScreenHold</a>
+  </header>
+
+  <div class="card">
+    <div class="card-head"><h2>主文案（发布正文）</h2><button class="copy" data-target="c1">复制</button></div>
+    <div class="content" id="c1">屏幕睡了，系统醒着 —— 屏息 ScreenHold，给连电脑调试的手机省一块 OLED 屏
+
+用过手机连电脑调试的兄弟都懂：adb 截图、input 注入、看 logcat，手机屏幕必须一直亮着。一天调试下来，OLED 有烧屏风险还刺眼，放桌上还以为在给手机做日光浴。
+
+于是写了这个 LSPosed 模块：装睡模式。
+
+一键开启后——
+• 屏幕进入纯黑（面板物理断电，不是调亮度，零发光零烧屏）
+• 系统不锁屏、不休眠，前台 App 照常跑
+• adb 截图拿到的是真实界面，input 注入照常生效
+• 按电源键 = 息屏 / 点亮切换，怎么按都不会上锁
+• 下拉状态栏有快捷开关磁贴，不用进 App
+• 可以设定时自动关闭，到点自动恢复（就算 App 被系统冻结也能准时关，判定在 system_server）
+
+原理一句话：反射 SurfaceControl 把显示面板断电，同时拦住休眠入口保持系统清醒。屏幕黑着，SurfaceFlinger 合成照常——所以截屏是真画面，这也是它和"真熄屏"的本质区别。
+
+【门槛 · 重要】
+• 需要 root + LSPosed 2.2+，Android 15+
+• LSPosed 里勾选「系统框架」作用域并重启
+• 系统级 hook 工具，风险自负，别拿主力机乱试（虽然试了也就是重启还原）
+
+【隐私】不联网、不要网络权限、不收集任何数据。
+
+【完全开源 MIT】github.com/wcx888/ScreenHold
+实现思路参考了 fakeScreen 两个开源项目与 betterfakescreen，致谢名单在 README。APK 在仓库 releases/ 目录自取，release 包正式签名可长期覆盖更新。
+
+屏幕息了，心不慌。🪫➡️😴</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>一句话简介（商店短描述）</h2><button class="copy" data-target="c2">复制</button></div>
+    <div class="content" id="c2">屏幕睡了，系统醒着：LSPosed 假熄屏调试工具，纯黑不锁屏，adb 截图/注入照常。开源 MIT。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>建议标签</h2><button class="copy" data-target="c3">复制</button></div>
+    <div class="tagrow" id="c3">
+      <span class="tag">LSPosed</span><span class="tag">Xposed模块</span><span class="tag">调试工具</span><span class="tag">OLED保护</span><span class="tag">开发者工具</span><span class="tag">开源</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>配图建议（发图文 3~5 张）</h2><button class="copy" data-target="c4">复制</button></div>
+    <div class="content" id="c4">1. 首页 App 截图（装睡模式开关卡）
+2. 下拉快捷磁贴截图
+3. 黑屏状态下 adb screencap 拉出的真实界面（对比图最有说服力）
+4. 诊断页截图（体现工程透明度）
+5. GitHub 仓库首页截图（README 渲染效果，佐证开源）</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>发布自检清单</h2><button class="copy" data-target="c5">复制</button></div>
+    <div class="content" id="c5">□ 酷安正文附 GitHub 链接（github.com/wcx888/ScreenHold）
+□ 评论区置顶：v1.2.4 更新内容 + APK 在仓库 releases/ 目录
+□ 确认未误传第三方镜像 APK（一律指向 GitHub releases/）</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>v1.2.4 更新内容（评论区置顶用）</h2><button class="copy" data-target="c6">复制</button></div>
+    <div class="content" id="c6">v1.2.4 更新：
+• 定名：对外「屏息 ScreenHold」，软件内模式名「装睡模式」
+• 通知栏改为状态提示：装睡模式已开启 · 系统不会自动锁屏
+• 下拉状态栏快捷开关磁贴（不进 App 直接开关）
+• 开关状态真源与系统钩子同步（退出重进显示不再出错）
+• 定时关闭到点自动收尾（不再残留后台服务）
+• 开机自愈：异常重启后自动还原系统锁屏时长</div>
+  </div>
+
+  <div class="foot">屏息 ScreenHold · github.com/wcx888/ScreenHold · 本页为发布工作稿，发布后可删</div>
+</div>
+
+<script>
+document.querySelectorAll('.copy').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var el = document.getElementById(btn.dataset.target);
+    var text = el.innerText.trim();
+    function ok(){
+      btn.textContent='已复制 ✓'; btn.classList.add('done');
+      setTimeout(function(){ btn.textContent='复制'; btn.classList.remove('done'); }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok).catch(function(){ fallback(); });
+    } else { fallback(); }
+    function fallback(){
+      var ta=document.createElement('textarea');
+      ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); ok(); }catch(e){ alert('复制失败，请手动选择文本'); }
+      document.body.removeChild(ta);
+    }
+  });
+});
+</script>
+</body>
+</html>
