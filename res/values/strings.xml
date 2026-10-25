@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 老板定名体系（2026-10-25）：
+         包名/代码标识 = offScreen（英文沿用，安装包内不可中文）；
+         对外展示名 = 屏息 ScreenHold（桌面图标名等可中文处）；
+         软件内模式名 = 装睡模式（开关/通知/磁贴/Toast 统一口径）。 -->
+    <string name="app_name">屏息 ScreenHold</string>
+    <string name="xposed_desc">屏息 ScreenHold（offScreen）：面板断电纯黑但不锁屏不休眠，adb 截图/注入照常，OLED 防烧屏</string>
+
+    <string name="notif_channel">offScreen</string>
+    <string name="notif_title">装睡模式已开启</string>
+    <string name="notif_text">系统不会自动锁屏 · 按电源键息屏/点亮 · adb 截图/注入可用</string>
+    <string name="notif_off">关闭装睡模式</string>
+
+    <!-- 下拉状态栏快捷开关磁贴（v1.2.3） -->
+    <string name="tile_label">装睡模式</string>
+</resources>

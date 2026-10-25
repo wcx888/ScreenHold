@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  息屏调试（com.workbuddy.screenoff）—— LSPosed 模块 + 开关 App 一体包。
+
+  作用：开启后手机视觉熄屏（SurfaceControl 面板物理断电 = 纯黑）但系统不锁屏、
+  不休眠，wakefulness 恒 Awake ⇒ adb 截图拿真实界面、input 注入有效、
+  Activity 持续运行，OLED 不烧屏。唤醒：再按电源键 / 黑屏双击 / adb 广播 / App 按钮。
+
+  机制：钩子跑在 system_server（hook PhoneWindowManager.powerPress + 拦 PMS 休眠），
+  App 侧只写状态通道 + 发 CMD 广播，不直接碰屏幕。
+
+  LSPosed 作用域 = android（系统框架）。
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.workbuddy.screenoff"
+    android:versionCode="2"
+    android:versionName="2.0.2610240000">
+
+    <uses-sdk android:minSdkVersion="35" android:targetSdkVersion="37" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:label="@string/app_name"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".DiagActivity"
+            android:exported="false"
+            android:label="权限与诊断" />
+
+        <!-- 前台服务：息屏调试期间常驻（心跳 + 双击旁听窗 + 自动关） -->
+        <service
+            android:name=".DarkService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="debugging" />
+        </service>
+
+        <!-- 下拉状态栏快捷开关磁贴（v1.2.3）：不进 App 开/关调试模式 -->
+        <service
+            android:name=".QSTileService"
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- adb 广播开关：TOGGLE / HOOKLOG。exported 给 shell 用，靠 token 防误触发 -->
+        <receiver
+            android:name=".ToggleReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.workbuddy.screenoff.TOGGLE" />
+                <action android:name="com.workbuddy.screenoff.HOOKLOG" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 开机复位：清状态，防模块异常后状态键卡在 1 -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data android:name="xposedmodule" android:value="true" />
+        <meta-data android:name="xposeddescription" android:value="@string/xposed_desc" />
+        <meta-data android:name="xposedminversion" android:value="82" />
+        <meta-data android:name="xposedscope" android:resource="@array/xposed_scope" />
+    </application>
+</manifest>

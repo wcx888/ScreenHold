@@ -1,0 +1,11 @@
+# 构建产物
+build/
+__pycache__/
+*.pyc
+
+# 签名与密钥 —— 绝不入库（正式 keystore 异地备份，见发布文档）
+_keystore/
+*.keystore
+*.jks
+signing.properties
+*.properties

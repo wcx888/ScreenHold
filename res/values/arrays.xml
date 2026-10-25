@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 系统框架作用域：钩子跑在 system_server（防睡 + 一键解锁注入都靠它） -->
+    <string-array name="xposed_scope">
+        <item>android</item>
+    </string-array>
+</resources>

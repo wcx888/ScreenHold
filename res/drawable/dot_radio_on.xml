@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 单选选中态：深黑外环 + 白心（与主界面 #141416 主题一致） -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <stroke android:width="5dp" android:color="#141416" />
+    <solid android:color="#ffffff" />
+    <size android:width="20dp" android:height="20dp" />
+</shape>
