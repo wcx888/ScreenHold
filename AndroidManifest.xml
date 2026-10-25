@@ -16,7 +16,7 @@
     android:versionCode="2"
     android:versionName="2.0.2610240000">
 
-    <uses-sdk android:minSdkVersion="35" android:targetSdkVersion="37" />
+    <uses-sdk android:minSdkVersion="27" android:targetSdkVersion="37" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />

@@ -234,7 +234,12 @@ public class DarkService extends Service {
                 .build();
 
         try {
-            startForeground(NOTIF_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+            if (android.os.Build.VERSION.SDK_INT >= 34) {
+                // 34+ 必须声明 FGS 类型；以下版本无此要求（specialUse 是 34 概念）
+                startForeground(NOTIF_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+            } else {
+                startForeground(NOTIF_ID, n);
+            }
         } catch (Throwable t) {
             // 个别 ROM 对 specialUse 挑剔：退化成无类型前台，通知照常
             Log.w(TAG, "startForeground(specialUse) fail, fallback: " + t);

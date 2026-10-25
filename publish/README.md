@@ -19,7 +19,7 @@
 ## 使用要求
 
 - 已 root 并安装 **LSPosed 2.2+**（Magisk 模块）
-- Android 15+（minSdk 35）
+- Android 8.1+（minSdk 27，覆盖 LSPosed 全部支持版本；建议 Android 9+）
 - 在 LSPosed 管理器中勾选本模块的 **「系统框架」作用域** 并重启手机
 
 ## 安装步骤

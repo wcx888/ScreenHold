@@ -59,7 +59,7 @@
 原理一句话：反射 SurfaceControl 把显示面板断电，同时拦住休眠入口保持系统清醒。屏幕黑着，SurfaceFlinger 合成照常——所以截屏是真画面，这也是它和"真熄屏"的本质区别。
 
 【门槛 · 重要】
-• 需要 root + LSPosed 2.2+，Android 15+
+• 需要 root + LSPosed 2.2+，Android 8.1+（老调试机也能用）
 • LSPosed 里勾选「系统框架」作用域并重启
 • 系统级 hook 工具，风险自负，别拿主力机乱试（虽然试了也就是重启还原）
 
