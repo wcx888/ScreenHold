@@ -1,4 +1,7 @@
-# 屏息 ScreenHold —— 酷安发布文案
+# 屏息 ScreenHold —— 酷安发布文案（v2，含 GitHub 链接）
+
+> 开源仓库：**https://github.com/wcx888/ScreenHold**
+> APK 直达：仓库 `releases/` 目录（release=正式签名 / debug=调试签名）
 
 ## 主文案
 
@@ -6,7 +9,7 @@
 
 **屏幕睡了，系统醒着 —— 屏息 ScreenHold，给连电脑调试的手机省一块 OLED 屏**
 
-用过手机连电脑调试的兄弟都懂：adb 截图、input 注入、看 logcat，手机屏幕必须一直亮着。一天调试下来，OLED 又烧屏风险又刺眼，放桌上还以为在给手机做日光浴。
+用过手机连电脑调试的兄弟都懂：adb 截图、input 注入、看 logcat，手机屏幕必须一直亮着。一天调试下来，OLED 有烧屏风险还刺眼，放桌上还以为在给手机做日光浴。
 
 于是写了这个 LSPosed 模块：**装睡模式**。
 
@@ -27,7 +30,8 @@
 
 **隐私**：不联网、不要网络权限、不收集任何数据。
 
-**开源**：MIT License，代码已上 GitHub（见评论区）。实现思路参考了 fakeScreen 两个开源项目与 betterfakescreen，致谢名单在 README。
+**完全开源（MIT）**：github.com/wcx888/ScreenHold
+实现思路参考了 fakeScreen 两个开源项目与 betterfakescreen，致谢名单在 README。APK 在仓库 releases/ 目录自取， release 包正式签名可长期覆盖更新。
 
 屏幕息了，心不慌。🪫➡️😴
 
@@ -35,7 +39,7 @@
 
 ## 一句话简介（商店短描述）
 
-> 屏幕睡了，系统醒着：LSPosed 假熄屏调试工具，纯黑不锁屏，adb 截图/注入照常。
+> 屏幕睡了，系统醒着：LSPosed 假熄屏调试工具，纯黑不锁屏，adb 截图/注入照常。开源 MIT。
 
 ## 建议标签
 
@@ -47,3 +51,10 @@
 2. 下拉快捷磁贴截图
 3. 黑屏状态下 adb screencap 拉出的真实界面（对比图最有说服力）
 4. 诊断页截图（体现工程透明度）
+5. GitHub 仓库首页截图（README 渲染效果，佐证开源）
+
+## 发布时的自检清单
+
+- [ ] 酷安正文附 GitHub 链接（github.com/wcx888/ScreenHold）
+- [ ] 评论区置顶：v1.2.4 更新内容 + APK 在仓库 releases/ 目录
+- [ ] 确认酷安未误传第三方镜像 APK（一律指向 GitHub releases/）
