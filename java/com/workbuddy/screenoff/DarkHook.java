@@ -59,7 +59,7 @@ public class DarkHook implements IXposedHookLoadPackage {
     private static final int POWER_MODE_DOZE = 3;
     private static final int POWER_MODE_ON = 2;
 
-    private static final long STALE_MS = 120_000L;
+    private static final long STALE_MS = 600_000L; // v1.2.6：10min（黑屏期间根本不判死，此窗只管「面板亮着+App 真死」回收）
     /** daemon 周期 5s：既要心跳判死（120s 窗口足够），也要被睡自愈（快于用户感知） */
     private static final long CYCLE_MS = 5_000L;
     /** 同一次电源键在两个 hook 通道间的去重窗口（betterfakescreen 同款） */
@@ -103,6 +103,11 @@ public class DarkHook implements IXposedHookLoadPackage {
 
     /** 上次即时恢复时刻（v1.1.2 节流：1s 内不重复 heal） */
     private static volatile long sLastHealMs = 0L;
+
+    // v1.2.6 逃生阀：黑屏中 10s 内连按 5 次电源键 → 强制退出模式（应对个别 ROM
+    // setDisplayPowerMode(ON) 驱动不生效等未知「无法亮屏」死锁，绝不把用户锁死在黑屏里）
+    private static volatile int sEscTaps = 0;
+    private static volatile long sEscFirstMs = 0L;
 
     /** PMS 实例（构造器 hook 捕获）：daemon 的 userActivity 心跳要用（v1.0.3） */
     private static volatile Object sPms = null;
@@ -203,8 +208,7 @@ public class DarkHook implements IXposedHookLoadPackage {
                     if (!darkNow || sInOwnWrite) {
                         return;
                     }
-                    boolean shouldHeal = sActive
-                            && (System.currentTimeMillis() - sAppHb) < STALE_MS;
+                    boolean shouldHeal = modeAlive(); // v1.2.6：黑屏期间不看心跳
                     long healNow = android.os.SystemClock.uptimeMillis();
                     if (shouldHeal && healNow - sLastHealMs < 1000L) {
                         shouldHeal = false; // 1s 节流：防 DisplayPowerController pending 态反复写 OFF 造成循环
@@ -451,6 +455,18 @@ public class DarkHook implements IXposedHookLoadPackage {
             return false; // 开关没开：完全放行系统原生行为
         }
         synchronized (LOCK) {
+            // v1.2.6 逃生阀计数（在 toggle 之前）：10s 窗口内第 5 次按下 = 强制退出。
+            // 前几次会正常亮/灭切换，第 5 次面板强制上电+模式全关+电源键交还系统。
+            long escNow = android.os.SystemClock.uptimeMillis();
+            if (escNow - sEscFirstMs > 10_000L) {
+                sEscTaps = 0;
+                sEscFirstMs = escNow;
+            }
+            if (++sEscTaps >= 5) {
+                sEscTaps = 0;
+                forceDeactivate(ctx);
+                return false; // 放行系统：正常亮屏（可能带锁屏页，符合「已退出模式」语义）
+            }
             boolean screenActuallyDark = isScreenActuallyDark(ctx);
             try {
                 sInOwnWrite = true; // 观察者据此忽略我们自己写的 OFF（防反向恢复死循环）
@@ -482,6 +498,30 @@ public class DarkHook implements IXposedHookLoadPackage {
                 }
                 return false;
             }
+        }
+    }
+
+    /** v1.2.6 逃生阀执行体：无条件全关（面板上电、还原超时、清态），电源键交还系统。 */
+    private static void forceDeactivate(Context ctx) {
+        synchronized (LOCK) {
+            sActive = false;
+            sAutoOffDeadline = 0L;
+            sPanelDark = false;
+            try {
+                sInOwnWrite = true;
+                try {
+                    setPanelDark(ctx, false);
+                } finally {
+                    sInOwnWrite = false;
+                }
+            } catch (Throwable t) {
+                XposedBridge.log(TAG + ": escape panel-restore fail " + t);
+            }
+            restoreScreenOffTimeout(ctx);
+            releaseKeepLock(ctx);
+            DarkState.putInt(ctx.getContentResolver(), DarkState.KEY_PANEL, 0);
+            DarkState.putInt(ctx.getContentResolver(), DarkState.KEY_STATE, 0);
+            XposedBridge.log(TAG + ": ESCAPE -> force deactivate (5 power taps / 10s)");
         }
     }
 
@@ -672,7 +712,22 @@ public class DarkHook implements IXposedHookLoadPackage {
      * 读回来永远是 0，曾导致「App 显示未开启 + 电源键拒绝 toggle + 屏幕关不了」三连。
      */
     private static boolean isEnabled(Context ctx) {
-        return sActive && (System.currentTimeMillis() - sAppHb) < STALE_MS;
+        return modeAlive();
+    }
+
+    /** App 心跳是否新鲜 */
+    private static boolean hbFresh() {
+        return (System.currentTimeMillis() - sAppHb) < STALE_MS;
+    }
+
+    /**
+     * v1.2.6 核心判据（修「黑屏一段时间后自动退出+锁屏」）：面板断电期间不检查 App
+     * 心跳 —— MIUI 息屏冻结 App 是常态（项目铁律），黑屏调试恰是冻结高发期，心跳
+     * 必然断流；功能由钩子自己维持，App 只是人机入口。面板亮着时才要求心跳新鲜
+     * （App 真死 10 分钟后由 daemon 判死回收，见 syncFromSettings）。
+     */
+    private static boolean modeAlive() {
+        return sActive && (sPanelDark || hbFresh());
     }
 
     // ================= 拦系统休眠 =================
@@ -773,7 +828,7 @@ public class DarkHook implements IXposedHookLoadPackage {
      * 自动关闭定时器（App 侧）兜底防忘关。
      */
     private static boolean shouldBlock() {
-        return sActive && (System.currentTimeMillis() - sAppHb) < STALE_MS;
+        return modeAlive(); // v1.2.6：黑屏期间不看心跳（同 isEnabled，MIUI 冻结 App 时不失效）
     }
 
     /**
@@ -863,9 +918,12 @@ public class DarkHook implements IXposedHookLoadPackage {
         }
         try {
             // v7：判死走纯内存（sAppHb 由 CMD setstate/hb 刷新），Settings 不再参与判定。
+            // v1.2.6 修「黑屏一阵后自动退出+锁屏」：MIUI 息屏冻结 App → 心跳断流 →
+            // 旧逻辑 120s 判死=模式退出+还原超时 → 系统照常锁屏。黑屏本身就是钩子在
+            // 维持的功能态，此期间绝不判死；只有面板亮着且心跳超窗（App 真死）才回收。
             long now = System.currentTimeMillis();
-            if (sActive && (now - sAppHb) > STALE_MS) {
-                // App 死了（FGS 被杀/卸载）：自动恢复面板并退出模式，绝不变炸弹
+            if (sActive && !sPanelDark && !hbFresh()) {
+                // App 死了（FGS 被杀/卸载）且面板不在假熄屏态：自动恢复并退出模式
                 sActive = false;
                 sAutoOffDeadline = 0L;
                 restorePanel(c);
@@ -878,8 +936,8 @@ public class DarkHook implements IXposedHookLoadPackage {
             // v1.1.1：SCREEN_BRIGHT_WAKE_LOCK 屏幕常亮锁——系统级官方机制，持有中 = 超时
             // 停摆，比 userActivity 反射更硬（两者并行，互为冗余）；同时写诊断计数到
             // Settings（system uid 写入可靠），真机 adb 一条命令即可取证。
-            boolean hbFresh = sActive && (now - sAppHb) < STALE_MS;
-            if (hbFresh) {
+            // v1.2.6：判据换 modeAlive —— 黑屏期间（App 被冻结心跳停）keepLock 不能放。
+            if (modeAlive()) {
                 acquireKeepLock(c);
                 userActivityKick();
                 DarkState.putInt(c.getContentResolver(), DarkState.KEY_UA_OK, sUaOkCount);
