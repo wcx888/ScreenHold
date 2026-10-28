@@ -36,7 +36,7 @@
 <div class="wrap">
   <header>
     <h1>屏息 ScreenHold — 酷安发布文案</h1>
-    <div class="meta">offScreen v1.2.4 (vc26) · 2026-10-25 · 每个区块右上角按钮一键复制</div>
+    <div class="meta">offScreen v1.2.6 (vc28) · 2026-10-28 · 每个区块右上角按钮一键复制</div>
     <a class="repo" href="https://github.com/wcx888/ScreenHold" target="_blank">github.com/wcx888/ScreenHold</a>
   </header>
 
@@ -95,19 +95,20 @@
   <div class="card">
     <div class="card-head"><h2>发布自检清单</h2><button class="copy" data-target="c5">复制</button></div>
     <div class="content" id="c5">□ 酷安正文附 GitHub 链接（github.com/wcx888/ScreenHold）
-□ 评论区置顶：v1.2.4 更新内容 + APK 在仓库 releases/ 目录
+□ 评论区置顶：v1.2.6 更新内容 + APK 在仓库 releases/ 目录
 □ 确认未误传第三方镜像 APK（一律指向 GitHub releases/）</div>
   </div>
 
   <div class="card">
-    <div class="card-head"><h2>v1.2.4 更新内容（评论区置顶用）</h2><button class="copy" data-target="c6">复制</button></div>
-    <div class="content" id="c6">v1.2.4 更新：
-• 定名：对外「屏息 ScreenHold」，软件内模式名「装睡模式」
-• 通知栏改为状态提示：装睡模式已开启 · 系统不会自动锁屏
-• 下拉状态栏快捷开关磁贴（不进 App 直接开关）
-• 开关状态真源与系统钩子同步（退出重进显示不再出错）
-• 定时关闭到点自动收尾（不再残留后台服务）
-• 开机自愈：异常重启后自动还原系统锁屏时长</div>
+    <div class="card-head"><h2>v1.2.6 更新内容（评论区置顶用）</h2><button class="copy" data-target="c6">复制</button></div>
+    <div class="content" id="c6">v1.2.6 更新（APK：仓库 releases/ 目录）：
+1. 修复：黑屏时间长了会自动退出并锁屏的问题（根因：MIUI 黑屏冻结 App 导致误判，现在黑屏期间由系统钩子全权维持，放多久都稳）
+2. 新增逃生阀：黑屏中 10 秒内连按 5 次电源键，强制退出并还原系统——个别机型万一点亮异常也能自救，绝不锁死
+3. 上版回顾：已支持 Android 8.1+（老调试机也能装）
+反馈问题请带上：机型 + 系统版本 + LSPosed 版本，最好附 logcat。
+
+—— 历史版本 ——
+v1.2.4/v1.2.5：定名「屏息 ScreenHold / 装睡模式」；通知改状态提示；下拉快捷磁贴；支持 Android 8.1+。</div>
   </div>
 
   <div class="foot">屏息 ScreenHold · github.com/wcx888/ScreenHold · 本页为发布工作稿，发布后可删</div>
